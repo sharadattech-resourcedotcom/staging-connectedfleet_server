@@ -27,6 +27,14 @@ def synchronize():
         log.setInput(str(request.data))
         database.db_session.add(log)
         database.db_session.commit()
+        
+        try:
+            driver.app_version = request.headers['App-Version']   
+            driver.app_version_code = request.headers['App-Version-Code']      
+            database.db_session.add(driver)
+        except Exception, e:
+            print e.message
+        
 
         status = True
         error = ''
