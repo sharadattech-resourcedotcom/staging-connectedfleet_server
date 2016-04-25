@@ -23,19 +23,19 @@ def synchronize():
         driver = database.db_session.query(models.User).filter(models.User.id == token.getUser_id(), models.User.user_type==1).first()
         print request.headers
         # Save method input
-        log = models.ApiLogger(driver.getId(), 'S', request.headers['App-Version'], request.headers['App-Version-Code'])
+        log = models.ApiLogger(driver.getId(), 'S', request.headers['App-Version'], None)
         log.setInput(str(request.data))
-        database.db_session.add(log)
+        
         database.db_session.commit()
         
         try:
             driver.app_version = request.headers['App-Version']   
-            driver.app_version_code = request.headers['App-Version-Code']      
+            driver.app_version_code = request.headers['App-Version-Code']
+            log.app_version_code = request.headers['App-Version-Code']    
             database.db_session.add(driver)
         except Exception, e:
-            print e.message
-        
-
+            print e.message 
+        database.db_session.add(log)
         status = True
         error = ''
         #TODO: CHECK TOKENS
