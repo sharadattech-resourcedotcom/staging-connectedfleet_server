@@ -251,7 +251,7 @@ def synchronize():
                     #status = False
                     error += 'Point error:' + e.message
 
-        if last_point:
+        if last_point and float(request.headers['Api-Version']) < 2.1:
             driver.lat = last_point.latitude
             driver.lng = last_point.longitude
             driver.last_sync = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S') 
