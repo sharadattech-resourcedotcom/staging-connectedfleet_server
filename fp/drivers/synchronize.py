@@ -46,6 +46,9 @@ def synchronize():
         
         last_point = None    
         for event in postdata['events']:
+            if 'Device-Platform' in request.headers and 'customEventObject' in event and request.headers['Device-Platform'] == 'ios':
+                event['customEventObject'] = json.dumps(event['customEventObject'])
+
             d = None
             print 'Parsing event type'+ event['type']
             if event['type'] == 'START':
@@ -128,7 +131,7 @@ def synchronize():
                     job.is_acknowledged = True
                     database.db_session.add(job)
 
-            if event['type'] == 'INSPECTION':                  
+            if event['type'] == 'INSPECTION':             
                 inspection = json.loads(event['customEventObject'])
                 city = None
                 address_line_1 = None
