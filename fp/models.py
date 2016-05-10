@@ -801,6 +801,42 @@ class AppVersion(database.Base):
             return update
         return False
 
+class DisposalInspection(database.Base):
+
+    __tablename__ = 'disposal_inspections'
+
+    def __init__(self, user_id, local_id, timestamp, vehicle_registration):
+        self.user_id = user_id
+        self.local_id = local_id
+        self.inspection_timestamp = datetime.utcfromtimestamp(int(timestamp)/1000)
+        self.vehicle_registration = vehicle_registration
+
+class DisposalPhoto(database.Base):
+    disposal_inspection = relationship("DisposalInspection")
+
+    __tablename__ = 'disposal_photos'
+
+    def __init__(self, path, ftp_filename, insp):
+        self.disposal_inspection = insp
+        self.path = path
+        self.ftp_filename = ftp_filename
+
+    @staticmethod
+    def attach_file(file_path, local_id, driver_id):
+        lid = local_id.replace('disposal_photo[', '').replace(']', '')
+        lid = lid.split("|") 
+        print "********************"
+        print lid[1], driver_id, datetime.utcfromtimestamp(int(lid[0])/1000)
+        insp = database.db_session.query(DisposalInspection).filter_by(local_id=lid[1], user_id=driver_id, inspection_timestamp=datetime.utcfromtimestamp(int(lid[0])/1000)).first()
+        ftp_filename = insp.vehicle_registration + lid[2] + ".jpg"
+
+        photo = DisposalPhoto(file_path, ftp_filename, insp)
+        database.db_session.add(photo)
+        # d = database.db_session.query(DisposalInspection).filter_by(local_id=lid[1], user_id=driver_id, inspection_datetime=datetime.utcfromtimestamp(int(lid[0])/1000)).first()
+        
+
+        return None
+
 
 
    

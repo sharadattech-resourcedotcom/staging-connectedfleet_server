@@ -130,6 +130,10 @@ def synchronize():
                 if job:
                     job.is_acknowledged = True
                     database.db_session.add(job)
+            if event['type'] == 'DISPOSAL_INSPECTION':
+                inspection = json.loads(event['customEventObject'])
+                di = models.DisposalInspection(driver.getId(), inspection['id'], event['timestamp'], inspection['registrationNumber'])
+                database.db_session.add(di)
 
             if event['type'] == 'INSPECTION':             
                 inspection = json.loads(event['customEventObject'])

@@ -28,13 +28,25 @@ def sendFiles():
 				return_data['error'] = "We couldn't authenticate you"
 			else:
 				for f in request.files:
-					filename = f + '_' + str(int(round(time.time() * 1000))) + '.jpg'
-					request.files[f].save(os.path.join(app.config['UPLOAD_PATH'] + 'damages', filename))
-					
-					d = models.DamageItem.attach_file(filename, f, driver.getId())
-					if d:
-						database.db_session.add(d)
-						return_data["data"] = return_data["data"] + 1
+					if "damage_item" in f:
+						filename = f + '_' + str(int(round(time.time() * 1000))) + '.jpg'
+						request.files[f].save(os.path.join(app.config['UPLOAD_PATH'] + 'damages', filename))
+						
+						d = models.DamageItem.attach_file(filename, f, driver.getId())
+						if d:
+							database.db_session.add(d)
+							return_data["data"] = return_data["data"] + 1
+
+					if "disposal_photo" in f:
+						filename = f + '_' + str(int(round(time.time() * 1000))) + '.jpg'
+						path = os.path.join(app.config['UPLOAD_PATH'] + 'disposal_photos', filename)
+						request.files[f].save(path)
+						
+						d = models.DisposalPhoto.attach_file("/disposal_photos/"+filename, f, driver.getId())
+						if d:
+							database.db_session.add(d)
+							return_data["data"] = return_data["data"] + 1
+
 
 				database.db_session.commit()
 	else:
@@ -43,3 +55,6 @@ def sendFiles():
 	print return_data
 
 	return json.dumps(return_data)
+
+# Method to send Damage files (its being send outside synchronization because 
+# of issues with sending multiple files in one request)
