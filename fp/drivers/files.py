@@ -42,7 +42,7 @@ def sendFiles():
 						path = os.path.join(app.config['UPLOAD_PATH'] + 'disposal_photos', filename)
 						request.files[f].save(path)
 						
-						d = models.DisposalPhoto.attach_file("/disposal_photos/"+filename, f, driver.getId())
+						d = models.DisposalPhoto.attach_file("/public/disposal_photos/"+filename, f, driver.getId())
 						if d:
 							database.db_session.add(d)
 							return_data["data"] = return_data["data"] + 1
