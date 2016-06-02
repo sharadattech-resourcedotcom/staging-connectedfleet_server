@@ -31,6 +31,9 @@ def synchronize():
         try:
             driver.app_version = request.headers['App-Version']   
             driver.app_version_code = request.headers['App-Version-Code']
+            driver.last_device = request.headers['Device-Model']
+            log.device_model = request.headers['Device-Model']
+            log.app_type = request.headers['App-Type']
             log.app_version_code = request.headers['App-Version-Code']    
             database.db_session.add(driver)
         except Exception, e:
@@ -192,7 +195,6 @@ def synchronize():
                     vehicle.assignManfacAndModel(inspection['manufacturer'], inspection['model'], driver.getCompanyId())
                     
                     mi = models.MobileInspection(inspection, token.getUser().getId(), None, vehicle.id, inspection['looseItemsChecked'], answers, inspection['driverNotes'], inspection['mileage'], file_name, email, city, postcode, address_line_1, address_line_2, home_number, customer_name)
-
                 database.db_session.add(mi)
                 if inspection.has_key('collections'):
                     for c in inspection['collections']:
@@ -268,6 +270,7 @@ def synchronize():
         try:
             database.db_session.commit()
         except Exception, e:
+            print e
             database.db_session.rollback()
             status = False
             error += 'Sync main loop error:' + e.message
