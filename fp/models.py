@@ -841,18 +841,18 @@ class DisposalPhoto(database.Base):
 
         return None
 
-class UploadLog(database.Base):
-    __tablename__ = 'upload_logs'
+# class UploadLog(database.Base):
+#     __tablename__ = 'upload_logs'
 
-    def __init__(self, user, headers, succeeded, method, error, ip):
-        self.user_id = user.id
-        self.company_id = user.company_id
-        self.created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-        self.app_version = headers['App-Version']
-        self.device_model = headers['Device-Model']
-        self.app_version_code = headers['App-Version-Code']
-        self.app_type = headers['App-Type']
-        self.method = method
-        self.succeeded = succeeded
-        self.ip = ip
-        self.error_message = error
+#     def __init__(self, user, headers, succeeded, method, error, ip):
+#         self.user_id = user.id
+#         self.company_id = user.company_id
+#         self.created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+#         self.app_version = headers['App-Version']
+#         self.device_model = headers['Device-Model']
+#         self.app_version_code = headers['App-Version-Code']
+#         self.app_type = headers['App-Type']
+#         self.method = method
+#         self.succeeded = succeeded
+#         self.ip = ip
+#         self.error_message = error
