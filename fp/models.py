@@ -499,6 +499,8 @@ class Job(database.Base):
            'postcode' : self.appointment.postcode,
            'city' : self.appointment.city,
            'street' : self.appointment.street,
+           'street2' : self.appointment.street2,
+           'home_number' : self.appointment.home_number,
            'number': self.number,
            'description' : self.appointment.branch.description +' - '+self.appointment.product.description,
            'abort_code' : self.abort_code,
@@ -617,6 +619,7 @@ class Job(database.Base):
            'postcode' : '',
            'city' : '',
            'street' : '',
+           'home_number' : '',
            'number': '',
            'description' : '',
            'abort_code' : '',
@@ -655,29 +658,30 @@ class MobileInspection(database.Base):
             
         if j:
             #self.bookings_id = j.jobable_id
-            self.job_id = j.id
+            self.job_id = j.id 
 
         if inspection_dict.has_key('jobType'):
-            self.job_type = inspection_dict['jobType']
+            self.job_type = inspection_dict['jobType'] 
         if inspection_dict.has_key('refNumber'):
-            self.ref_number = inspection_dict['refNumber']
+            self.ref_number = inspection_dict['refNumber'] 
         # print inspection_dict
         # raise 'x'
-        self.customer_email = email
-        self.city = city
-        self.postcode = postcode
-        self.address_line_1 = address_line_1
-        self.address_line_2 = address_line_2
-        self.home_number = home_number
-        self.created_at = datetime.utcnow()        
-        self.loose_items = loose_items
-        self.questions = questions
-        self.user_id = user_id
-        self.vehicle_id = vehicle_id
-        self.notes = notes
-        self.mileage = mileage
-        self.terms_file_name = terms_file
-        self.customer_name = customer_name
+        self.customer_email = email 
+        self.city = city 
+        self.postcode = postcode 
+        self.address_line_1 = address_line_1 
+        self.address_line_2 = address_line_2 
+        self.home_number = home_number 
+        self.created_at = datetime.utcnow()  
+        self.loose_items = loose_items 
+        self.questions = questions 
+        self.user_id = user_id 
+        self.vehicle_id = vehicle_id 
+        self.notes = notes 
+        self.mileage = mileage 
+        self.terms_file_name = terms_file 
+        self.customer_name = customer_name 
+
 
 class DamageItem(database.Base):
     mobile_inspection = relationship("MobileInspection")
@@ -837,6 +841,18 @@ class DisposalPhoto(database.Base):
 
         return None
 
+class UploadLog(database.Base):
+    __tablename__ = 'upload_logs'
 
-
-   
+    def __init__(self, user, headers, succeeded, method, error, ip):
+        self.user_id = user.id
+        self.company_id = user.company_id
+        self.created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        self.app_version = headers['App-Version']
+        self.device_model = headers['Device-Model']
+        self.app_version_code = headers['App-Version-Code']
+        self.app_type = headers['App-Type']
+        self.method = method
+        self.succeeded = succeeded
+        self.ip = ip
+        self.error_message = error
