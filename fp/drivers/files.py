@@ -27,8 +27,6 @@ def sendFiles():
 				if not driver:
 					raise Exception("We couldn't authenticate you")
 				else:
-					print "ASDFFFFFFFFFFFFFFFfffff"
-					print request.files.items()
 					for f in request.files:
 						if "damage_item" in f:
 							filename = f + '_' + str(int(round(time.time() * 1000))) + '.jpg'
@@ -40,11 +38,9 @@ def sendFiles():
 								return_data["data"] = return_data["data"] + 1
 
 						if "disposal_photo" in f:
-							print f
 							filename = f + '_' + str(int(round(time.time() * 1000))) + '.jpg'
 							path = os.path.join(app.config['UPLOAD_PATH'] + 'disposal_photos', filename)
 							request.files[f].save(path)
-							print path
 							d = models.DisposalPhoto.attach_file("/public/disposal_photos/"+filename, f, driver.getId())
 							if d:
 								database.db_session.add(d)

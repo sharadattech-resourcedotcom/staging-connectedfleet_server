@@ -58,7 +58,6 @@ def getJobs():
         jobs = database.db_session.query(models.Job).filter(models.Job.start_date >= curr_date).filter(models.Job.start_date <= tomorrow).filter_by(user_id = token.getUser().id) 
         jobs_data = [j.serialize for j in jobs]
         jobs_data.insert(0, models.Job.nojob(driver.company_id))
-        print jobs_data
         return_data = {'status': True, 'error': None, 'data': jobs_data}
 
         return json.dumps(return_data)

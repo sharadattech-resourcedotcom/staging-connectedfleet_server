@@ -15,13 +15,11 @@ def synchronize():
     # if float(request.headers['App-Version']) < 2.0:
     #         return_data = {'status': False, 'error': 'Please install newest version of application.', 'data': None}
     #         return json.dumps(return_data)
-    print request.headers
     if request.method == 'POST':
         postdata = request.get_json()
         print postdata
         token  = database.db_session.query(models.Token).filter(models.Token.id == postdata['token_id']).first()
         driver = database.db_session.query(models.User).filter(models.User.id == token.getUser_id(), models.User.user_type==1).first()
-        print request.headers
         # Save method input
         log = models.ApiLogger(driver.getId(), 'S', request.headers['App-Version'], None)
         log.setInput(str(request.data))
