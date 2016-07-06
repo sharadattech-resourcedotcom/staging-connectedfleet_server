@@ -15,7 +15,7 @@ def synchronize():
     # if float(request.headers['App-Version']) < 2.0:
     #         return_data = {'status': False, 'error': 'Please install newest version of application.', 'data': None}
     #         return json.dumps(return_data)
-            
+    print request.headers
     if request.method == 'POST':
         postdata = request.get_json()
         print postdata
