@@ -493,6 +493,10 @@ class Job(database.Base):
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        description = ""
+        if self.appointment.branch:
+            description += self.appointment.branch.description + ' - '
+        description += self.appointment.product.description + ' (' + str(self.number) + ') '
         dict = {
            'id'   : self.id,
            'name' : str(self.job_type) + self.number ,
@@ -502,7 +506,7 @@ class Job(database.Base):
            'street2' : self.appointment.street2,
            'home_number' : self.appointment.home_number,
            'number': self.number,
-           'description' : self.appointment.branch.description +' - '+self.appointment.product.description,
+           'description' : description,
            'abort_code' : self.abort_code,
            'notes' : self.appointment.notes,
            'type': self.job_type,
