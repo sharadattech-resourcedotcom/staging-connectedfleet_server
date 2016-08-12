@@ -50,15 +50,15 @@ def sendFiles():
 			raise Exception("Wrong request METHOD used")
 
 		print return_data
-		log = models.UploadLog(driver, request.headers, True, "sendFiles", None, request.remote_addr)
-		database.db_session.add(log)
+		# log = models.UploadLog(driver, request.headers, True, "sendFiles", None, request.remote_addr)
+		# database.db_session.add(log)
 		database.db_session.commit()
 		return json.dumps(return_data)
 	except Exception, e:
 		print e
 		return_data["status"] = False
 	 	return_data["error"] = e.message
-	 	log = models.UploadLog(driver, request.headers, False, "sendFiles", e.message, request.remote_addr)
-		database.db_session.add(log)
+	 	# log = models.UploadLog(driver, request.headers, False, "sendFiles", e.message, request.remote_addr)
+		# database.db_session.add(log)
 		database.db_session.commit()
 		return json.dumps(return_data)
