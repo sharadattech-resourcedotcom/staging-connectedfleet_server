@@ -519,7 +519,10 @@ class Job(database.Base):
            "work_phone": self.appointment.work_phone,
            "courtesy_car": self.appointment.courtesy_car,
            "excess": self.appointment.excess,
-           "ref_number": self.appointment.claim_number
+           "ref_number": self.appointment.claim_number,
+           "home_phone": self.appointment.home_phone,
+           "work_phone": self.appointment.work_phone,
+           "mobile_phone": self.appointment.mobile
         }
 
         if self.job_type == "C":
