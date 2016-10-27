@@ -690,15 +690,45 @@ class MobileInspection(database.Base):
         self.terms_file_name = terms_file 
         self.customer_name = customer_name 
 
+class EstimatorInspection(database.Base):
+
+    __tablename__ = 'estimator_inspections'
+
+    def __init__(self, driver_id, vehicle_id, inspection, event_timestamp):
+        self.driver_id = driver_id
+        self.vehicle_id = vehicle_id
+        self.event_timestamp = event_timestamp
+        self.created_at = datetime.utcnow()
+        self.check_list =  inspection['checklist']
+        self.chassis_no = inspection['chassisNo']
+        self.mileage = inspection['mileage']
+        self.color = inspection['colour']
+        self.vehicle_type = inspection['estimatorType']
+        if inspection['estimatorType'] == "VAN":
+            self.ply_lining_condition = inspection['plyLiningCondition']
+            self.nsf = inspection['nsf']
+            self.nsr = inspection['nsr']
+            self.osf = inspection['osf']
+            self.osr = inspection['osr']
+
+
 
 class DamageItem(database.Base):
     mobile_inspection = relationship("MobileInspection")
+    estimator_inspection = relationship("EstimatorInspection")
 
     __tablename__ = 'damage_items'
 
     def __init__(self, description, local_id, timestamp, collection_id, driver_id, insp):
         self.local_id = local_id
-        self.mobile_inspection = insp
+
+        if isinstance(insp, MobileInspection):
+            self.mobile_inspection = insp
+        elif isinstance(insp, EstimatorInspection):
+            self.estimator_inspection = insp
+        else:
+            raise Exception('Wrong inspection.')
+
         self.user_id = driver_id
         self.description = description
         self.inspection_datetime = timestamp
@@ -716,18 +746,31 @@ class DamageItem(database.Base):
             database.db_session.add(d)
             return d
         else:
-            print 'Damage not found'
+            raise Exception('Damage not found')
 
         return None
 
 class DamageCollection(database.Base):
     __tablename__ = 'damage_collections'
     mobile_inspection = relationship("MobileInspection")
+    estimator_inspection = relationship("EstimatorInspection")
 
     def __init__(self, collection, insp):
-        self.collection_id = collection['collectionId']
+        if isinstance(insp, EstimatorInspection):
+            self.estimator_inspection = insp
+        elif isinstance(insp, MobileInspection):
+            self.mobile_inspection = insp
+        else:
+            raise Exception('DamageColletion constructor exception. Inspection not found.')
+
+        if collection.get("collectionId") and collection.get("collectionId") != "":
+            self.collection_id = collection.get('collectionId')
+        elif collection.get("id") and collection.get("id") != "":
+            self.collection_id = collection.get('id')
+        else:
+            raise Exception('DamageColletion constructor exception. Missing collection id.')
+
         self.description = collection.get('description', None)
-        self.mobile_inspection = insp
         self.collection_type = collection['collectionType']
         self.dual_tyres = collection.get('dualTyres', None)
         self.x_percent = collection['xPercent']
@@ -743,6 +786,16 @@ class DamageCollection(database.Base):
             self.driver_front = collection.get('driverFront', None)
         if collection.get("passengerFront") and collection.get("passengerFront") != "":
             self.passenger_front = collection.get('passengerFront', None)
+        if collection.get("price") and collection.get("price") != "":
+            self.repair_price = collection.get('price', None)
+        if collection.get("repairMethod") and collection.get("repairMethod") != "":
+            self.repair_method = collection.get('repairMethod', None)
+
+        if collection.has_key('damages') and isinstance(insp, EstimatorInspection):
+            for d in collection['damages']:
+                dm = DamageItem(d.get('dmgDescription', None), d.get('id', None), insp.event_timestamp, d.get('collectionId', None), insp.driver_id, insp)
+                database.db_session.add(dm)
+
 
 
 class DriverType(database.Base):

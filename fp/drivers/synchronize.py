@@ -136,6 +136,27 @@ def synchronize():
                 di = models.DisposalInspection(driver.getId(), inspection['id'], event['timestamp'], inspection['registrationNumber'])
                 database.db_session.add(di)
 
+            if event['type'] == 'ESTIMATOR': #(self, driver_id, vehicle_id, check_list, chassis_no, mileage, color, vehicle_type):
+                inspection = json.loads(event['customEventObject'])
+                vehicle = database.db_session.query(models.Vehicle).filter_by(registration = inspection['registration'], company_id = driver.getCompanyId()).first()
+                if not vehicle:
+                    vehicle = models.Vehicle(inspection['registration'], driver.getCompanyId())
+                    vehicle.assignManfacAndModel(inspection['manufacturer'], inspection['model'], driver.getCompanyId()) 
+                    database.db_session.add(vehicle)
+                    vehicle = database.db_session.query(models.Vehicle).filter_by(registration=inspection['registration'], company_id = driver.getCompanyId()).first()
+
+                vehicle.color = inspection['colour']
+                vehicle.chassis_no = inspection['chassisNo']
+                vehicle.vehicle_type = inspection['estimatorType']
+                database.db_session.add(vehicle)
+
+                ei = models.EstimatorInspection(token.getUser().getId(), vehicle.id, inspection, event['timestamp'])
+                database.db_session.add(ei)
+                if inspection.has_key('damages'):
+                    for c in inspection['damages']:
+                        dc = models.DamageCollection(c, ei)
+                        database.db_session.add(dc)
+
             if event['type'] == 'INSPECTION':             
                 inspection = json.loads(event['customEventObject'])
                 city = None
