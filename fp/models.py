@@ -2,6 +2,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String
 
 import database
+import json
 from datetime import datetime
 from sqlalchemy import or_
 from sqlalchemy import func
@@ -699,7 +700,7 @@ class EstimatorInspection(database.Base):
         self.vehicle_id = vehicle_id
         self.event_timestamp = event_timestamp
         self.created_at = datetime.utcnow()
-        self.check_list =  inspection['checklist']
+        self.check_list =  json.dumps(inspection['checklist'])
         self.chassis_no = inspection['chassisNo']
         self.mileage = inspection['mileage']
         self.color = inspection['colour']
