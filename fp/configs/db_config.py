@@ -1,4 +1,4 @@
-DB_NAME = 'flight_dev2'
+DB_NAME = 'cf_staging'
 DB_LOGIN = 'postgres'
 DB_PASSWORD = 'postgres'
 DB_HOST = '127.0.0.1'
